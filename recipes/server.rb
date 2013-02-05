@@ -1,9 +1,17 @@
 knife_dir = node[:vagrant][:knife_dir] 
 
 include_recipe "vagrant-post"
+
+# detect chef-server 11
+validator =  "/etc/chef/validation.pem" 
+if File.exists? "/opt/chef-server" 
+  validator =  "/etc/chef-server/chef-validator.pem"
+end
+
+
 execute "cp-validate" do 
-  command "cp /etc/chef/validation.pem #{knife_dir}"
-  only_if "test -f /etc/chef/validation.pem"
+  command "cp #{validator} #{knife_dir}"
+  only_if "test -f #{validator}"
   not_if "test -f #{knife_dir}/validation.pem"
 end
 
