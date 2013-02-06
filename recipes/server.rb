@@ -7,7 +7,7 @@ validator =  "/etc/chef/validation.pem"
 knife_args = "--defaults  -s http://localhost:4000"
 if File.exists? "/opt/chef-server" 
   validator =  "/etc/chef-server/chef-validator.pem"
-  knife_args = " -s https://localhost:443 --admin-client-key /etc/chef-server/chef-webui.pem --admin-client-name webui --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
+  knife_args = " -s https://localhost:#{node[:vagrant][:chef_server][:port]} --admin-client-key /etc/chef-server/chef-webui.pem --admin-client-name webui --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
 end
 
 
