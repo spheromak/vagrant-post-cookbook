@@ -2,10 +2,12 @@ knife_dir = node[:vagrant][:knife_dir]
 
 include_recipe "vagrant-post"
 
-# detect chef-server 11
+# default chef10 values
+# 
 validator =  "/etc/chef/validation.pem" 
-knife_args = "--defaults  -s http://localhost:4000"
-if File.exists? "/opt/chef-server" 
+knife_args = "--defaults -s http://localhost:#{node[:vagrant][:chef_server][:port]}"
+
+if  node[:vagrant][:chef_server][:version] == 10 
   validator =  "/etc/chef-server/chef-validator.pem"
   knife_args = " -s https://localhost:#{node[:vagrant][:chef_server][:port]} --admin-client-key /etc/chef-server/admin.pem --admin-client-name admin --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
 end
