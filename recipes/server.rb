@@ -9,7 +9,7 @@ knife_args = "--defaults -s http://localhost:#{node[:vagrant][:chef_server][:por
 
 if 11 == node[:vagrant][:chef_server][:version] 
   validator =  "/etc/chef-server/chef-validator.pem"
-  knife_args = " -s https://localhost:#{node[:vagrant][:chef_server][:port]} --admin-client-key /etc/chef-server/admin.pem --admin-client-name admin --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
+  knife_args = " -s http://localhost:#{node[:vagrant][:chef_server][:port]} --admin-client-key /etc/chef-server/admin.pem --admin-client-name admin --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
 end
 
 
