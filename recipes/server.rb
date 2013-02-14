@@ -19,7 +19,14 @@ execute "cp-validate" do
   not_if "test -f #{knife_dir}/validation.pem"
 end
 
+knife_cmd = "knife configure #{knife_args} -u vagrant -c #{knife_dir}/provisioned-knife.rb  -y -r #{knife_dir}"
+create_cmd = knife_cmd
+if node[:chef_packages][:chef][:version].to_i >= 11 
+  # chef11 client wants you to set a user password
+  create_cmd = "echo 'vagrant' | #{knife_cmd}" 
+end
+
 execute "create-knife" do
-  command "knife configure #{knife_args} -u vagrant -c #{knife_dir}/provisioned-knife.rb  -y -r #{knife_dir}  -i "
+  command  create_cmd
   not_if "test -f #{knife_dir}/vagrant.pem"
 end
