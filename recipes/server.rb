@@ -1,15 +1,15 @@
 knife_dir = node[:vagrant][:knife_dir] 
+server_url = node[:vagrant][:chef_server][:url]
 
 include_recipe "vagrant-post"
-
 # default chef10 values
 # 
 validator =  "/etc/chef/validation.pem" 
-knife_args = "--defaults -s http://localhost:#{node[:vagrant][:chef_server][:port]}"
+knife_args = "--defaults -s #{server_url}"
 
 if 11 == node[:vagrant][:chef_server][:version] 
   validator =  "/etc/chef-server/chef-validator.pem"
-  knife_args = " -s http://localhost:#{node[:vagrant][:chef_server][:port]} --admin-client-key /etc/chef-server/admin.pem --admin-client-name admin --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
+  knife_args = " -s #{server_url} --admin-client-key /etc/chef-server/admin.pem --admin-client-name admin --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
 end
 
 
@@ -19,11 +19,16 @@ execute "cp-validate" do
   not_if "test -f #{knife_dir}/validation.pem"
 end
 
-knife_cmd = "knife configure #{knife_args} -u vagrant -c #{knife_dir}/provisioned-knife.rb  -y -r #{knife_dir}"
-create_cmd = knife_cmd
-if node[:chef_packages][:chef][:version].to_i >= 11 
+create_cmd = "knife configure #{knife_args} -u vagrant -c #{knife_dir}/provisioned-knife.rb  -y -r #{knife_dir} -i"
+
+if node[:chef_packages][:chef][:version].to_i >= 11
   # chef11 client wants you to set a user password
-  create_cmd = "echo 'vagrant' | #{knife_cmd}" 
+  create_cmd = "echo 'vagrant' | " <<  create_cmd
+end
+
+if node[:chef_packages][:chef][:version].to_i >= 11
+  # chef11 client wants you to set a user password
+  create_cmd = "echo 'vagrant' | #{create_cmd}" 
 end
 
 execute "create-knife" do
