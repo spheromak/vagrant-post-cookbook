@@ -4,10 +4,11 @@ include_recipe "vagrant-post"
 validator =  "/etc/chef/validation.pem" 
 knife_args = "--defaults -s #{node[:chef_server][:url]}"
 
-# can't use ohai attribs here since we assume chef-server was installed on this run. 
-# TODO: Use ohai chef-server value if it exists, and fallback to File.directory
-if File.directory? "/opt/chef-server"
-  Chef::Log.info " Found Chef11 server dir using chef11 knife config "
+
+# this is from chef-server recipe
+# TODO: mayb check if chef-server in run list then do this check 
+if node.has_key? 'chef-server' and node['chef-server'].has_key? 'configuration'
+  Chef::Log.info " Found Chef11 server attributes; using chef11 knife config "
   validator =  "/etc/chef-server/chef-validator.pem"
   knife_args = " -s #{node[:chef_server][:url]} --admin-client-key /etc/chef-server/admin.pem --admin-client-name admin --validation-client-name chef-validator  --validation-key=/etc/chef-server/chef-validator.pem"
 end
